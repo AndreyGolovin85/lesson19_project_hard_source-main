@@ -6,7 +6,6 @@ from dao.user import UserDAO
 
 from constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS
 
-
 class UserService:
     def __init__(self, dao: UserDAO):
         self.dao = dao
@@ -20,8 +19,16 @@ class UserService:
     def get_all(self):
         return self.dao.get_all()
 
+    def get_password_hash(self, password):
+        return base64.b64encode(hashlib.pbkdf2_hmac(
+            'sha256',
+            password.encode('utf-8'),  # Convert the password to bytes
+            PWD_HASH_SALT,
+            PWD_HASH_ITERATIONS
+        ))
+
     def create(self, user_data):
-        user_data["password"] = self.get_password(user_data["password"])
+        user_data["password"] = self.get_password_hash(user_data["password"])
         return self.dao.create(user_data)
 
     def update(self, user_data):
@@ -31,13 +38,5 @@ class UserService:
     def delete(self, uid):
         self.dao.delete(uid)
 
-    def get_password(self, password):
-        return base64.b64encode(hashlib.pbkdf2_hmac(
-            'sha256',
-            password.encode('utf-8'),  # Convert the password to bytes
-            PWD_HASH_SALT,
-            PWD_HASH_ITERATIONS
-            ))
-
     def compare_password(self, password, password_hash):
-        hmac.compare_digest(base64.b16decode(password_hash), self.get_password(password))
+        hmac.compare_digest(base64.b16decode(password_hash), self.get_password_hash(password))
