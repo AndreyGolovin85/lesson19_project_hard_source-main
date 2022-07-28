@@ -106,3 +106,15 @@ Content-Type: application/json
 }
 
 ###
+
+PUT http://127.0.0.1:10001/users/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "Test",
+  "password": "gfsakjh602",
+  "role": "admin"
+}
+
+###

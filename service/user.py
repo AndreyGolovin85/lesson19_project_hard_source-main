@@ -32,8 +32,9 @@ class UserService:
         return self.dao.create(user_data)
 
     def update(self, user_data):
+        user_data["password"] = self.get_password_hash(user_data["password"])
         self.dao.update(user_data)
-        return self.dao
+        return user_data
 
     def delete(self, uid):
         self.dao.delete(uid)
